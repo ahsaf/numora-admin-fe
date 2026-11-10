@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import {
   BuildingIcon,
   CreditCardIcon,
+  FlaskIcon,
   GaugeIcon,
   LayersIcon,
   UserBlockIcon,
@@ -39,4 +40,9 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Plans', href: '/plans', icon: <LayersIcon />, comingSoon: true },
     ],
   },
+  // `next dev` only (its route is app/(portal)/e2e/page.dev.tsx): runs Playwright on this machine.
+  // NODE_ENV is inlined, so production builds drop this item. See e2e/README.md.
+  ...(process.env.NODE_ENV === 'development'
+    ? [{ title: 'Developer', items: [{ label: 'E2E tests', href: '/e2e', icon: <FlaskIcon /> }] }]
+    : []),
 ];

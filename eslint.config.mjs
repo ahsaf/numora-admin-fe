@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local-only Playwright package with its own deps and tsconfig (yarn --cwd e2e tsc).
+    "e2e/**",
   ]),
 ]);
 

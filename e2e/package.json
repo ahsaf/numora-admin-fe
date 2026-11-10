@@ -1,0 +1,21 @@
+{
+  "name": "numora-admin-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-only Playwright regression tests of the Numora app, run from the admin dashboard. Not part of the admin build or deployment.",
+  "scripts": {
+    "dev": "concurrently -k -n admin,e2e -c blue,magenta \"yarn --cwd .. dev\" \"yarn runner\"",
+    "runner": "tsx runner/server.ts",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report playwright-report",
+    "tsc": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^22",
+    "concurrently": "^10.0.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

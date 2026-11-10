@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# e2e (local-only Playwright package, see e2e/README.md)
+/e2e/node_modules/
+/e2e/test-results/
+/e2e/playwright-report/
