@@ -5,6 +5,7 @@ import {
   FlaskIcon,
   GaugeIcon,
   LayersIcon,
+  ShapesIcon,
   SlidersIcon,
   UserBlockIcon,
 } from '@/components/ui/icons';
@@ -31,6 +32,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: 'Manage',
     items: [
       { label: 'Companies', href: '/companies', icon: <BuildingIcon /> },
+      { label: 'Company types', href: '/company-types', icon: <ShapesIcon /> },
       { label: 'Blocked users', href: '/blocked-users', icon: <UserBlockIcon /> },
     ],
   },

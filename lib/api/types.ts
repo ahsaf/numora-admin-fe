@@ -62,6 +62,8 @@ export type CompanyDetail = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  /** The kind of business picked at setup; null for "Other". */
+  companyType: { id: number; name: string } | null;
   stats: {
     totalUsers: number;
     activeUsers: number;
@@ -296,4 +298,77 @@ export type PlatformSettings = {
   contactPhone: string;
   /** Comma-separated. Empty: contactEmail, then every super admin. */
   requestNotifyEmails: string;
+};
+
+// ------------------------------------------------------------ company types
+
+/** One field's settings as a company changes them; missing keys keep the default. */
+export type FieldOverride = {
+  label?: string;
+  validation?: string;
+  maxLength?: number;
+  isRequired?: boolean;
+  isActive?: boolean;
+};
+
+export type TemplateModule = { module: string; isActive: boolean };
+export type TemplateCategory = { name: string; color: string; type: number };
+export type TemplateRole = { name: string; permissionKeys: string[] };
+
+/** A kind of business, and the setup a new company of that kind starts with. */
+export type CompanyType = {
+  id: number;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  /** Offered at setup. */
+  isActive: boolean;
+  /** Every module, in sidebar order. */
+  modules: TemplateModule[];
+  /** Only what differs from the defaults, by form then field key. */
+  formFields: Record<string, Record<string, FieldOverride>>;
+  categories: TemplateCategory[];
+  roles: TemplateRole[];
+  /** Companies set up as this type. */
+  companies?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FormFieldSettingInput = {
+  key: string;
+  label: string;
+  isRequired: boolean;
+  isActive: boolean;
+};
+
+export type CompanyTypeInput = {
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  modules: TemplateModule[];
+  formFields: { form: string; fields: FormFieldSettingInput[] }[];
+  categories: TemplateCategory[];
+  roles: TemplateRole[];
+};
+
+export type CompanyTypeFieldDef = {
+  key: string;
+  label: string;
+  kind: string;
+  required: boolean;
+  /** Always on and required. */
+  locked: boolean;
+  /** Always has a value, so it can't be made required. */
+  noRequired: boolean;
+};
+
+/** What a company type can set, from the server. */
+export type CompanyTypeOptions = {
+  modules: { key: string; label: string; isLocked: boolean }[];
+  forms: { key: string; label: string; fields: CompanyTypeFieldDef[] }[];
+  permissionModules: { key: string; label: string }[];
+  permissionActions: { key: string; label: string }[];
+  categoryTypes: { value: number; label: string }[];
 };

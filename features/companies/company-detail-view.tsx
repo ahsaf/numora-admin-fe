@@ -6,6 +6,7 @@ import {
   Alert,
   ArrowLeftIcon,
   Avatar,
+  Badge,
   Button,
   CalendarIcon,
   Card,
@@ -109,6 +110,7 @@ export function CompanyDetailView({ id }: { id: number }) {
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight break-words">{company.name}</h1>
             <StatusBadge active={company.isActive} />
+            {company.companyType && <Badge tone="brand">{company.companyType.name}</Badge>}
           </div>
           <p className="mt-0.5 text-sm text-fg-muted">
             Company #{company.id} · on Numora since {formatDate(company.createdAt)}

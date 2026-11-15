@@ -7,6 +7,9 @@ import type {
   CompanyDetail,
   CompanyListResponse,
   CompanySubscription,
+  CompanyType,
+  CompanyTypeInput,
+  CompanyTypeOptions,
   CompanyStatusFilter,
   CompanyUser,
   Dashboard,
@@ -75,6 +78,16 @@ export const plansApi = {
   create: (body: PlanInput) => api.post<ApiResponse<Plan>>('/admin/plans', body).then((r) => r.data),
   update: (id: number, body: PlanInput) => api.patch<ApiResponse<Plan>>(`/admin/plans/${id}`, body).then((r) => r.data),
   remove: (id: number) => api.delete<ApiResponse<number>>(`/admin/plans/${id}`).then((r) => r.data),
+};
+
+export const companyTypesApi = {
+  list: () => api.get<ApiResponse<CompanyType[]>>('/admin/company-types').then((r) => r.data),
+  options: () => api.get<ApiResponse<CompanyTypeOptions>>('/admin/company-types/options').then((r) => r.data),
+  create: (body: CompanyTypeInput) =>
+    api.post<ApiResponse<CompanyType>>('/admin/company-types', body).then((r) => r.data),
+  update: (id: number, body: CompanyTypeInput) =>
+    api.patch<ApiResponse<CompanyType>>(`/admin/company-types/${id}`, body).then((r) => r.data),
+  remove: (id: number) => api.delete<ApiResponse<number>>(`/admin/company-types/${id}`).then((r) => r.data),
 };
 
 export const subscriptionsApi = {

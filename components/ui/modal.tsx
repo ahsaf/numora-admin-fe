@@ -11,12 +11,12 @@ type Props = {
   description?: ReactNode;
   children?: ReactNode;
   footer?: ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /** Blocks closing (Esc / backdrop) while an action is running. */
   busy?: boolean;
 };
 
-const widths = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl' };
+const widths = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl', xl: 'max-w-4xl' };
 
 /** Built on the native <dialog>, which handles focus trapping and Esc. */
 export function Modal({ open, onClose, title, description, children, footer, size = 'md', busy }: Props) {
