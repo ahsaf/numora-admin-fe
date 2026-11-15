@@ -5,6 +5,8 @@ const DEFAULT_PAGE_EXTENSIONS = ["tsx", "ts", "jsx", "js"];
 
 export default function config(phase: string): NextConfig {
   return {
+    // Self-contained server in .next/standalone, deployed to the droplet with pm2.
+    output: "standalone",
     cacheComponents: true,
     partialPrefetching: true,
     // `page.dev.tsx` routes exist under `next dev` only: the local E2E tests page (app/(portal)/e2e)

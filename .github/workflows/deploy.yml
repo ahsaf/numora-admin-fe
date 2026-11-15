@@ -1,0 +1,77 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      APP_DIR: /var/www/superapp/admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        # NEXT_PUBLIC_* values are baked into the bundle at build time.
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_TELEMETRY_DISABLED: 1
+        run: |
+          test -n "$NEXT_PUBLIC_API_URL" || { echo "Set the NEXT_PUBLIC_API_URL repository variable"; exit 1; }
+          yarn build
+
+      - name: Bundle standalone server
+        # next.config.ts sets output: "standalone"; static assets and public/ must be copied in.
+        run: |
+          cp -r public .next/standalone/public
+          cp -r .next/static .next/standalone/.next/static
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host droplet
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            Port ${{ secrets.SSH_PORT || 22 }}
+            IdentityFile ~/.ssh/id_ed25519
+          EOF
+
+      - name: Upload release
+        run: rsync -az --delete .next/standalone/ droplet:$APP_DIR/
+
+      - name: Restart
+        run: |
+          ssh droplet bash -se <<EOF
+          set -euo pipefail
+          cd $APP_DIR
+          if pm2 describe admin > /dev/null 2>&1; then
+            PORT=3140 HOSTNAME=127.0.0.1 pm2 reload admin --update-env
+          else
+            PORT=3140 HOSTNAME=127.0.0.1 pm2 start server.js --name admin
+          fi
+          pm2 save
+          EOF
