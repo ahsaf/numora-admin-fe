@@ -1,15 +1,25 @@
 import { api } from './client';
 import type {
+  ActivateSubscriptionInput,
   AdminProfile,
   ApiResponse,
   BlockedUser,
   CompanyDetail,
   CompanyListResponse,
+  CompanySubscription,
   CompanyStatusFilter,
   CompanyUser,
   Dashboard,
   ListQuery,
   PaginatedResponse,
+  Plan,
+  PlanInput,
+  PlatformSettings,
+  SubscriptionPeriod,
+  SubscriptionRequest,
+  SubscriptionRequestFilter,
+  SubscriptionRequestListResponse,
+  SubscriptionRequestStatus,
 } from './types';
 
 /** Drops empty values so the URL stays clean. */
@@ -58,4 +68,41 @@ export const usersApi = {
       .then((r) => r.data),
   setBlocked: (id: number, blocked: boolean) =>
     api.patch<ApiResponse<{ id: number; blocked: boolean }>>(`/admin/users/${id}/block`, { blocked }).then((r) => r.data),
+};
+
+export const plansApi = {
+  list: () => api.get<ApiResponse<Plan[]>>('/admin/plans').then((r) => r.data),
+  create: (body: PlanInput) => api.post<ApiResponse<Plan>>('/admin/plans', body).then((r) => r.data),
+  update: (id: number, body: PlanInput) => api.patch<ApiResponse<Plan>>(`/admin/plans/${id}`, body).then((r) => r.data),
+  remove: (id: number) => api.delete<ApiResponse<number>>(`/admin/plans/${id}`).then((r) => r.data),
+};
+
+export const subscriptionsApi = {
+  get: (companyId: number) =>
+    api.get<ApiResponse<CompanySubscription>>(`/admin/companies/${companyId}/subscription`).then((r) => r.data),
+  activate: (companyId: number, body: ActivateSubscriptionInput) =>
+    api
+      .post<ApiResponse<SubscriptionPeriod>>(`/admin/companies/${companyId}/subscription`, body)
+      .then((r) => r.data),
+  cancel: (companyId: number, subscriptionId: number) =>
+    api
+      .post<ApiResponse<SubscriptionPeriod>>(`/admin/companies/${companyId}/subscription/${subscriptionId}/cancel`)
+      .then((r) => r.data),
+};
+
+export const subscriptionRequestsApi = {
+  list: (query: { page: number; limit: number; status: SubscriptionRequestFilter }) =>
+    api
+      .get<SubscriptionRequestListResponse>('/admin/subscription-requests', { params: query })
+      .then((r) => r.data),
+  setStatus: (id: number, status: SubscriptionRequestStatus.handled | SubscriptionRequestStatus.dismissed) =>
+    api
+      .patch<ApiResponse<SubscriptionRequest>>(`/admin/subscription-requests/${id}`, { status })
+      .then((r) => r.data),
+};
+
+export const settingsApi = {
+  get: () => api.get<ApiResponse<PlatformSettings>>('/admin/settings').then((r) => r.data),
+  update: (body: Partial<PlatformSettings>) =>
+    api.put<ApiResponse<PlatformSettings>>('/admin/settings', body).then((r) => r.data),
 };

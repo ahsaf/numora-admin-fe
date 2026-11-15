@@ -26,6 +26,7 @@ import { formatDate, formatNumber } from '@/lib/format';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchCompanies, setCompaniesQuery } from '@/store/slices/companies-slice';
 import { setCompanyStatus } from '@/store/thunks';
+import { SubscriptionBadge } from '@/features/plans/plan-labels';
 
 export function CompaniesView() {
   const dispatch = useAppDispatch();
@@ -94,7 +95,29 @@ export function CompaniesView() {
       className: 'hidden text-right sm:table-cell',
       cell: (c) => <span className="tabular">{formatNumber(c.invoiceCount)}</span>,
     },
-    { key: 'joined', nowrap: true, header: 'Joined', className: 'hidden lg:table-cell', cell: (c) => <span className="text-fg-muted">{formatDate(c.createdAt)}</span> },
+    { key: 'joined', nowrap: true, header: 'Joined', className: 'hidden 2xl:table-cell', cell: (c) => <span className="text-fg-muted">{formatDate(c.createdAt)}</span> },
+    {
+      key: 'plan',
+      header: 'Plan',
+      className: 'hidden lg:table-cell',
+      cell: (c) => (
+        <div className="flex flex-col items-start gap-0.5">
+          <SubscriptionBadge status={c.subscription.status} />
+          {c.subscription.planName && (
+            <span
+              className="max-w-36 truncate text-xs text-fg-subtle"
+              title={
+                c.subscription.endsAt
+                  ? `${c.subscription.status === 'expired' ? 'Ended' : 'Ends'} ${formatDate(c.subscription.endsAt)}`
+                  : undefined
+              }
+            >
+              {c.subscription.planName}
+            </span>
+          )}
+        </div>
+      ),
+    },
     { key: 'status', header: 'Status', cell: (c) => <StatusBadge active={c.isActive} /> },
     {
       key: 'actions', nowrap: true,

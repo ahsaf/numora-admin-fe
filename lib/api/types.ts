@@ -42,6 +42,7 @@ export type CompanyListItem = {
   invoiceCount: number;
   ownerName: string | null;
   ownerEmail: string | null;
+  subscription: { status: SubscriptionStatus; planName: string | null; endsAt: string | null };
 };
 
 export type CompanySummary = { all: number; active: number; inactive: number };
@@ -143,4 +144,156 @@ export type Dashboard = {
     invoiceCount: number;
     billedTotal: number;
   }[];
+};
+
+// ------------------------------------------------------------- subscriptions
+
+export enum PlanType {
+  fixed = 1,
+  payAsYouGo = 2,
+}
+
+export enum BillingCycle {
+  trial = 0,
+  monthly = 1,
+  yearly = 2,
+}
+
+/** trial / active can make changes; expired (ended) and none (never subscribed) are read-only. */
+export type SubscriptionStatus = 'trial' | 'active' | 'expired' | 'none';
+
+/** Modules a plan can include (transactions, bank accounts and administration come with every plan). */
+export const PLAN_FEATURES = [
+  { key: 'customer', label: 'Customers' },
+  { key: 'vendor', label: 'Vendors' },
+  { key: 'product', label: 'Products' },
+  { key: 'service', label: 'Services' },
+  { key: 'report', label: 'Reports' },
+] as const;
+export type PlanFeature = (typeof PLAN_FEATURES)[number]['key'];
+
+/** Records whose count a plan can limit. */
+export const PLAN_RESOURCES = [
+  { key: 'customer', label: 'Customers' },
+  { key: 'vendor', label: 'Vendors' },
+  { key: 'product', label: 'Products' },
+  { key: 'service', label: 'Services' },
+  { key: 'bankAccount', label: 'Bank accounts' },
+  { key: 'user', label: 'Users' },
+  { key: 'role', label: 'Roles' },
+  { key: 'category', label: 'Categories' },
+] as const;
+export type PlanResource = (typeof PLAN_RESOURCES)[number]['key'];
+
+/** Records a pay-as-you-go plan charges for each month. */
+export const PAY_AS_YOU_GO_RESOURCES = [
+  { key: 'customer', label: 'Customer' },
+  { key: 'vendor', label: 'Vendor' },
+  { key: 'product', label: 'Product' },
+  { key: 'service', label: 'Service' },
+  { key: 'user', label: 'User' },
+  { key: 'bankAccount', label: 'Bank account' },
+] as const;
+export type PayAsYouGoResource = (typeof PAY_AS_YOU_GO_RESOURCES)[number]['key'];
+
+export type Plan = {
+  id: number;
+  name: string;
+  description: string | null;
+  type: PlanType;
+  monthlyPrice: number | null;
+  yearlyPrice: number | null;
+  features: PlanFeature[];
+  /** null = unlimited */
+  limits: Record<PlanResource, number | null>;
+  unitPrices: Record<PayAsYouGoResource, number>;
+  isTrial: boolean;
+  /** Companies on it right now. */
+  activeCompanies?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PlanInput = {
+  name: string;
+  description?: string | null;
+  type: PlanType;
+  monthlyPrice?: number | null;
+  yearlyPrice?: number | null;
+  features: PlanFeature[];
+  limits: Partial<Record<PlanResource, number | null>>;
+  unitPrices: Partial<Record<PayAsYouGoResource, number>>;
+  isTrial: boolean;
+};
+
+export type SubscriptionPeriod = {
+  id: number;
+  plan: { id: number; name: string; type: PlanType };
+  cycle: BillingCycle;
+  startsAt: string;
+  endsAt: string;
+  amount: number;
+  paymentReference: string | null;
+  notes: string | null;
+  cancelledAt: string | null;
+  createdAt: string;
+};
+
+export type CompanySubscription = {
+  status: SubscriptionStatus;
+  canWrite: boolean;
+  /** The running period, or the last one when expired. */
+  current: SubscriptionPeriod | null;
+  daysLeft: number;
+  plan: Plan | null;
+  usage: Record<PlanResource, number>;
+  payAsYouGo: {
+    lines: { resource: PayAsYouGoResource; count: number; unitPrice: number; amount: number }[];
+    total: number;
+  } | null;
+  upcoming: SubscriptionPeriod[];
+  history: SubscriptionPeriod[];
+};
+
+export type ActivateSubscriptionInput = {
+  planId: number;
+  cycle: BillingCycle.monthly | BillingCycle.yearly;
+  amount?: number;
+  startNow?: boolean;
+  paymentReference?: string;
+  notes?: string;
+};
+
+export enum SubscriptionRequestStatus {
+  pending = 0,
+  handled = 1,
+  dismissed = 2,
+}
+
+export type SubscriptionRequestFilter = 'pending' | 'handled' | 'dismissed' | 'all';
+
+/** A company asking for a plan from the web app's subscription page. */
+export type SubscriptionRequest = {
+  id: number;
+  company: { id: number; name: string; email: string | null; phone: string | null };
+  plan: { id: number; name: string; type: PlanType };
+  cycle: BillingCycle;
+  message: string | null;
+  status: SubscriptionRequestStatus;
+  requestedBy: { name: string | null; email: string | null; phone: string | null } | null;
+  handledAt: string | null;
+  createdAt: string;
+};
+
+export type SubscriptionRequestListResponse = PaginatedResponse<SubscriptionRequest> & {
+  pendingCount: number;
+};
+
+/** Platform-wide settings; an empty string means not set. */
+export type PlatformSettings = {
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  /** Comma-separated. Empty: contactEmail, then every super admin. */
+  requestNotifyEmails: string;
 };

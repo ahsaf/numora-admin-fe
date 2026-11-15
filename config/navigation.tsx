@@ -5,6 +5,7 @@ import {
   FlaskIcon,
   GaugeIcon,
   LayersIcon,
+  SlidersIcon,
   UserBlockIcon,
 } from '@/components/ui/icons';
 
@@ -36,9 +37,13 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Billing',
     items: [
-      { label: 'Subscriptions', href: '/subscriptions', icon: <CreditCardIcon />, comingSoon: true },
-      { label: 'Plans', href: '/plans', icon: <LayersIcon />, comingSoon: true },
+      { label: 'Subscription requests', href: '/subscriptions', icon: <CreditCardIcon /> },
+      { label: 'Plans', href: '/plans', icon: <LayersIcon /> },
     ],
+  },
+  {
+    title: 'Platform',
+    items: [{ label: 'Settings', href: '/settings', icon: <SlidersIcon /> }],
   },
   // `next dev` only (its route is app/(portal)/e2e/page.dev.tsx): runs Playwright on this machine.
   // NODE_ENV is inlined, so production builds drop this item. See e2e/README.md.

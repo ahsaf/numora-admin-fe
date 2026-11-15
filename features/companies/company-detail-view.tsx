@@ -29,6 +29,7 @@ import { formatDate, formatMoney, formatNumber, formatRelative } from '@/lib/for
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchCompany, resetCompanyDetail } from '@/store/slices/company-detail-slice';
 import { setCompanyStatus } from '@/store/thunks';
+import { CompanySubscriptionCard } from './company-subscription-card';
 import { CompanyUsersCard } from './company-users-card';
 
 function InfoRow({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
@@ -152,6 +153,10 @@ export function CompanyDetailView({ id }: { id: number }) {
           value={formatMoney(s.billedTotal)}
           hint={`${formatMoney(s.collectedTotal)} collected`}
         />
+      </div>
+
+      <div className="mt-4">
+        <CompanySubscriptionCard companyId={company.id} companyName={company.name} />
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[320px_1fr]">

@@ -61,3 +61,4 @@ export const PlayIcon = make(<path d="M7 4v16l13-8L7 4Z" />, 'PlayIcon');
 export const StopIcon = make(<rect x="6" y="6" width="12" height="12" rx="1.5" />, 'StopIcon');
 export const ExternalLinkIcon = make(<><path d="M15 3h6v6M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></>, 'ExternalLinkIcon');
 export const CircleDashedIcon = make(<><path d="M10.1 2.2a10 10 0 0 1 3.8 0M17.6 3.7a10 10 0 0 1 2.7 2.7M21.8 10.1a10 10 0 0 1 0 3.8M20.3 17.6a10 10 0 0 1-2.7 2.7M13.9 21.8a10 10 0 0 1-3.8 0M6.4 20.3a10 10 0 0 1-2.7-2.7M2.2 13.9a10 10 0 0 1 0-3.8M3.7 6.4a10 10 0 0 1 2.7-2.7" /></>, 'CircleDashedIcon');
+export const SlidersIcon = make(<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4" />, 'SlidersIcon');

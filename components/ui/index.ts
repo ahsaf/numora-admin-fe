@@ -15,3 +15,4 @@ export * from './search-input';
 export * from './segmented';
 export * from './spinner';
 export * from './stat-card';
+export * from './select';
