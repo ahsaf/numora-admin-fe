@@ -1,8 +1,8 @@
 name: Deploy
 
+# Runs only when triggered manually from the Actions tab ("Run workflow").
+# Pick the branch to build and deploy in the "Use workflow from" dropdown.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
